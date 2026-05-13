@@ -15,17 +15,42 @@ jobs:
       - name: Deploy locally on Ubuntu VM
         run: |
           cd /home/motya/deploy/is-stack
+
           echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ secrets.GHCR_USER }}" --password-stdin
+
           docker compose pull app
           docker compose up -d
           docker compose ps
-          curl -f http://127.0.0.1:5000/health
-          curl -f http://127.0.0.1:5000/version
-          curl -f http://127.0.0.1:5000/db/ping
-          docker compose pull app
-          docker compose up -d
-          docker compose ps
-          sleep 60
-          curl -f http://127.0.0.1:5000/health
-          curl -f http://127.0.0.1:5000/version
-          curl -f http://127.0.0.1:5000/db/ping
+
+          echo "Waiting for app health..."
+          for i in {1..30}; do
+            if curl -f http://127.0.0.1:5000/health; then
+              echo "App is ready"
+              break
+            fi
+            echo "App not ready yet, retry $i"
+            sleep 5
+          done
+
+          echo "Checking version..."
+          for i in {1..20}; do
+            if curl -f http://127.0.0.1:5000/version; then
+              echo "Version endpoint is ready"
+              break
+            fi
+            echo "Version not ready yet, retry $i"
+            sleep 5
+          done
+
+          echo "Checking database..."
+          for i in {1..40}; do
+            if curl -f http://127.0.0.1:5000/db/ping; then
+              echo "Database is ready"
+              exit 0
+            fi
+            echo "Database not ready yet, retry $i"
+            sleep 5
+          done
+
+          echo "Deploy failed: database check did not pass"
+          exit 1
