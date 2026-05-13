@@ -22,3 +22,10 @@ jobs:
           curl -f http://127.0.0.1:5000/health
           curl -f http://127.0.0.1:5000/version
           curl -f http://127.0.0.1:5000/db/ping
+          docker compose pull app
+          docker compose up -d
+          docker compose ps
+          sleep 60
+          curl -f http://127.0.0.1:5000/health
+          curl -f http://127.0.0.1:5000/version
+          curl -f http://127.0.0.1:5000/db/ping
