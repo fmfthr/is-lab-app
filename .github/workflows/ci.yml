@@ -27,14 +27,13 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore IsLabApp.sln
 
       - name: Build
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build IsLabApp.sln --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test --configuration Release --no-build
-        continue-on-error: true
+        run: dotnet test IsLabApp.sln --configuration Release --no-restore
 
       - name: Login to GHCR
         if: github.event_name == 'push'
