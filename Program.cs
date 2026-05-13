@@ -27,7 +27,7 @@ app.MapGet("/health", () =>
 app.MapGet("/version", (IConfiguration config) =>
 {
     var appName = config["App:Name"] ?? "IsLabApp";
-    var appVersion = config["App:Version"] ?? "0.0.0";
+    var appVersion = config["App:Version"] ?? "0.1.0-lab11";
 
     return Results.Ok(new
     {
